@@ -5,6 +5,7 @@ const PADDLE_WIDTH = 100;
 const PADDLE_MARGIN_BOTTOM = 25;
 const PADDLE_HEIGHT = 20;
 const BALL_RADIUS = 8;
+let LIFE = 3;
 let leftKey = false;
 let rightKey = false;
 
@@ -43,9 +44,9 @@ document.addEventListener('keyup', function(event) {
 })
 
 function movePaddle() {
-   if (leftKey && paddle.x > 10) {
+   if (leftKey && paddle.x > 0) {
       paddle.x -= paddle.dx;
-   } else if (rightKey && paddle.x + paddle.width < canvas.width - 10) {
+   } else if (rightKey && paddle.x + paddle.width < canvas.width) {
       paddle.x += paddle.dx;
    }
 }
@@ -55,8 +56,8 @@ const ball = {
    y: paddle.y - BALL_RADIUS,
    radius: BALL_RADIUS,
    speed: 4,
-   dx: 3,
-   dx: -3
+   dx: 3 * (Math.random() * 2 - 1), //random ball direction,
+   dy: -3
 }
 
 function drawBall() {
@@ -65,16 +66,67 @@ function drawBall() {
    context.fillStyle = "silver";
    context.fill();
 
-   
+   context.strokeStyle = "grey";
+   context.lineWidth = 1;
+   context.stroke();
+
+   context.closePath();
+}
+
+function moveBall() {
+   ball.x += ball.dx;
+   ball.y += ball.dy;
+}
+
+function ballWallCollision() {
+   if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+      ball.dx = -ball.dx;
+   }
+
+   if (ball.y - ball.radius < 0) {
+      ball.dy = -ball.dy;
+   }
+
+   if (ball.y + ball.radius > canvas.height) {
+      LIFE--;
+      resetBall();
+   }
+}
+
+function resetBall() {
+   ball.x = canvas.width / 2;
+   ball.y = paddle.y - BALL_RADIUS;
+   ball.dx = 3 * (Math.random() * 2 - 1); //random ball direction
+   ball.dy = -3
+}
+
+function ballPaddleCollision() {
+   if (ball.x < paddle.x + paddle.width && 
+      ball.x > paddle.x && 
+      paddle.y < paddle.y + paddle.height &&
+      ball.y > paddle.y) {
+
+         //different direction when ball hits paddle
+         let collidePoint = ball.x - (paddle.x + paddle.width / 2);
+         collidePoint = collidePoint / (paddle.width / 2);
+         let angle = collidePoint * Math.PI / 3;
+
+         ball.dx = ball.speed * Math.sin(angle);
+         ball.dy = - ball.speed * Math.cos(angle);
+      }
 }
 
 function draw() {
+   context.clearRect(0, 0, canvas.width, canvas.height);
    drawPaddle();
    drawBall();
 }
 
 function update() {
    movePaddle();
+   moveBall();
+   ballWallCollision();
+   ballPaddleCollision();
 }
 
 function loop() {
