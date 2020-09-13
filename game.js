@@ -24,12 +24,19 @@ function drawPaddle() {
 
 let leftKey = false;
 let rightKey = false;
+let pauseKey = false;
 
 document.addEventListener('keydown', function(event) {
    if (event.keyCode === 37) {
       leftKey = true;
    } else if (event.keyCode === 39) {
       rightKey = true;
+   } else if (event.keyCode === 80) {
+      if (pauseKey === false) {
+         pauseKey = true;
+      } else {
+         pauseKey = false;
+      }
    }
 })
 
@@ -56,7 +63,7 @@ const ball = {
    x: canvas.width / 2,
    y: paddle.y - BALL_RADIUS,
    radius: BALL_RADIUS,
-   speed: 4,
+   speed: 5,
    dx: 3 * (Math.random() * 2 - 1), //random direction when the ball starts
    dy: -3
 }
@@ -79,15 +86,14 @@ function moveBall() {
 
 //BRICKS
 const brick = {
-   row: 5,
+   row: 3,
    column: 10,
    width: canvas.width / 10,
    height: 20,
    offSetLeft: 0,
    offSetTop: 25,
    marginTop: 50,
-   fillColor: "purple",
-   strokeColor: "white"
+   strokeStyle: "white"
 }
 
 let bricks = [];
@@ -109,6 +115,7 @@ createBricks();
 
 function drawBricks() {
    let color = ["teal", "chartreuse", "magenta", "orange"];
+
    for (let i = 0; i < brick.row; i++) {
       for (let j = 0; j < brick.column; j++) {
          let b = bricks[i][j];
@@ -117,7 +124,7 @@ function drawBricks() {
             context.fillStyle = color[Math.floor(Math.random() * color.length)];
             context.fillRect(b.x, b.y, brick.width, brick.height);
 
-            context.strokeStyle = brick.strokeColor;
+            context.strokeStyle = brick.strokeStyle;
             context.strokeRect(b.x, b.y, brick.width, brick.height);
          }
       }
@@ -153,7 +160,7 @@ function ballWallCollision() {
 
    //when the ball hits the bottom border
    if (ball.y + ball.radius > canvas.height) {
-      LIFE = LIFE - 1;
+      LIVES = LIVES - 1;
       ballReset();
    }
 }
@@ -171,7 +178,7 @@ function ballBrickCollision() {
 
                ball.dy = - ball.dy;
                b.status = false;
-               SCORE += SCORE_UNIT;
+               SCORE += POINTS;
             }
          }
       }
@@ -186,44 +193,45 @@ function ballReset() {
 }
 
 //GAME
-let LIFE = 3;
+let LIVES = 5;
 let SCORE = 0;
-const SCORE_UNIT = 100;
+const POINTS = 100;
 let LEVEL = 1;
 const MAX_LEVEL = 3;
 
-function renderStats(text, textX, textY) {
-   context.fillStyle = "white";
-   context.font = "25px Arial";
-   context.fillText(text, textX, textY)
+function renderStats(stat, statXPos, statYPos, image, imageXPos, imageYPos) {
+   context.fillStyle = 'violet';
+   context.font = '35px Righteous';
+   context.fillText(stat, statXPos, statYPos);
+   context.drawImage(image, imageXPos, imageYPos, imageWidth = 30, imageHeight = 30);
 }
 
 function levelUp() {
-   let isLevelDone = true;
+   let levelComplete = true;
 
    for (let i = 0; i < brick.row; i++) {
       for (let j = 0; j < brick.column; j++) {
-         isLevelDone = isLevelDone && !bricks[i][j].status;
+         levelComplete = levelComplete && !bricks[i][j].status;
       }
    }
 
-   if (isLevelDone) {
+   if (levelComplete) {
       if (LEVEL >= MAX_LEVEL) {
          GAME_OVER = true;
          return;
       }
-      brick.row++;
+      brick.row = brick.row + 1;
       createBricks();
-      ball.speed += 1;
+      ball.speed = ball.speed + 1;
       ballReset();
-      LEVEL++
+      LEVEL = LEVEL + 1
    }
 }
 
 let GAME_OVER;
 
 function gameOver() {
-   if (LIFE <= 0) {
+   if (LIVES <= 0) {
       GAME_OVER = true;
    }
 }
@@ -232,12 +240,16 @@ function draw() {
    drawPaddle();
    drawBall();
    drawBricks();
-   renderStats(SCORE, 35, 25);
-   renderStats(LIFE, canvas.width - 35, 25);
-   renderStats(LEVEL, canvas.width / 2, 25);
+   renderStats(SCORE, 50, 35, points_svg, 15, 10);
+   renderStats(LEVEL, canvas.width / 2, 35, level_svg, canvas.width / 2 - 30, 5);
+   renderStats(LIVES, canvas.width - 35, 35, lives_svg, canvas.width - 70, 5);
 }
 
 function update() {
+   if (pauseKey) {
+      return;
+   }
+
    movePaddle();
    moveBall();
    ballPaddleCollision();
