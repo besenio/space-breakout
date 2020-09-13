@@ -1,24 +1,24 @@
 const canvas = document.getElementById('spacebreakout-ui');
 const context = canvas.getContext('2d');
 
+//PADDLE
 const PADDLE_WIDTH = 100;
-const PADDLE_BOTTOM_MARGIN = 7;
 const PADDLE_HEIGHT = 20;
+const PADDLE_BOTTOM_MARGIN = 5; //dont touch bottom border
 
 const paddle = {
    x: (canvas.width / 2) - (PADDLE_WIDTH / 2),
    y: canvas.height - PADDLE_BOTTOM_MARGIN - PADDLE_HEIGHT,
    width: PADDLE_WIDTH,
    height: PADDLE_HEIGHT,
-   dx: 5
+   dx: 5 //delta-x - movement left and right
 };
 
-const drawPaddle = () => {
-   context.fillStyle = 'silver';
+function drawPaddle() {
+   context.fillStyle = 'grey';
    context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-
-   context.strokeStyle = 'grey';
-   context.lineWidth = 2;
+   context.lineWidth = 1;
+   context.strokeStyle = 'white';
    context.strokeRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
@@ -42,12 +42,14 @@ document.addEventListener('keyup', function(event) {
 })
 
 function movePaddle() {
-   if (leftKey && paddle.x > 7) {
+   if (leftKey && paddle.x > 5) { //>5 wont touch left border
       paddle.x -= paddle.dx;
-   } else if (rightKey && paddle.x + paddle.width < canvas.width - 7) {
+   } else if (rightKey && paddle.x + paddle.width < canvas.width - 5) { //-5 wont touch right border
       paddle.x += paddle.dx;
    }
 }
+
+//BALL
 const BALL_RADIUS = 8;
 
 const ball = {
@@ -55,20 +57,18 @@ const ball = {
    y: paddle.y - BALL_RADIUS,
    radius: BALL_RADIUS,
    speed: 4,
-   dx: 3 * (Math.random() * 2 - 1), //random ball direction,
+   dx: 3 * (Math.random() * 2 - 1), //random direction when the ball starts
    dy: -3
 }
 
 function drawBall() {
    context.beginPath();
-   context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-   context.fillStyle = "silver";
+   context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2); //draw circle
+   context.fillStyle = "grey";
    context.fill();
-
-   context.strokeStyle = "grey";
    context.lineWidth = 1;
+   context.strokeStyle = "white";
    context.stroke();
-
    context.closePath();
 }
 
@@ -77,44 +77,7 @@ function moveBall() {
    ball.y += ball.dy;
 }
 
-function ballWallCollision() {
-   if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
-      ball.dx = -ball.dx;
-   }
-
-   if (ball.y - ball.radius < 0) {
-      ball.dy = -ball.dy;
-   }
-
-   if (ball.y + ball.radius > canvas.height) {
-      LIFE--;
-      resetBall();
-   }
-}
-
-function resetBall() {
-   ball.x = canvas.width / 2;
-   ball.y = paddle.y - BALL_RADIUS;
-   ball.dx = 3 * (Math.random() * 2 - 1); //random ball direction
-   ball.dy = -3
-}
-
-function ballPaddleCollision() {
-   if (ball.x < paddle.x + paddle.width && 
-      ball.x > paddle.x && 
-      paddle.y < paddle.y + paddle.height &&
-      ball.y > paddle.y) {
-
-         //different direction when ball hits paddle
-         let collidePoint = ball.x - (paddle.x + paddle.width / 2);
-         collidePoint = collidePoint / (paddle.width / 2);
-         let angle = collidePoint * Math.PI / 3;
-
-         ball.dx = ball.speed * Math.sin(angle);
-         ball.dy = - ball.speed * Math.cos(angle);
-      }
-}
-
+//BRICKS
 const brick = {
    row: 5,
    column: 10,
@@ -144,25 +107,6 @@ function createBricks() {
 
 createBricks();
 
-function ballBrickCollision() {
-   for (let i = 0; i < brick.row; i++) {
-      for (let j = 0; j < brick.column; j++) {
-         let b = bricks[i][j];
-
-         if (b.status) {
-            if (ball.x + ball.radius > b.x &&
-               ball.x - ball.radius < b.x + brick.width &&
-               ball.y + ball.radius > b.y &&
-               ball.y - ball.radius < b.y + brick.height) {
-                  ball.dy = - ball.dy;
-                  b.status = false;
-                  SCORE += SCORE_UNIT;
-               }
-         }
-      }
-   }
-}
-
 function drawBricks() {
    let color = ["teal", "chartreuse", "magenta", "orange"];
    for (let i = 0; i < brick.row; i++) {
@@ -180,13 +124,75 @@ function drawBricks() {
    }
 }
 
-let LIFE = 30;
+//COLLISION DETECTION
+function ballPaddleCollision() {
+   if (ball.x < paddle.x + paddle.width &&
+      ball.x > paddle.x &&
+      paddle.y < paddle.y + paddle.height &&
+      ball.y > paddle.y) {
+
+      let collidePoint = ball.x - (paddle.x + paddle.width / 2);
+      collidePoint = collidePoint / (paddle.width / 2);
+      let angle = collidePoint * Math.PI / 3; //angle the ball
+
+      ball.dx = ball.speed * Math.sin(angle);
+      ball.dy = - ball.speed * Math.cos(angle);
+   }
+}
+
+function ballWallCollision() {
+   //when the ball hits the left or right border
+   if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+      ball.dx = -ball.dx;
+   }
+
+   //when the ball hits the top border
+   if (ball.y - ball.radius < 0) {
+      ball.dy = -ball.dy;
+   }
+
+   //when the ball hits the bottom border
+   if (ball.y + ball.radius > canvas.height) {
+      LIFE = LIFE - 1;
+      ballReset();
+   }
+}
+
+function ballBrickCollision() {
+   for (let i = 0; i < brick.row; i++) {
+      for (let j = 0; j < brick.column; j++) {
+         let b = bricks[i][j];
+
+         if (b.status) {
+            if (ball.x + ball.radius > b.x &&
+               ball.x - ball.radius < b.x + brick.width &&
+               ball.y + ball.radius > b.y &&
+               ball.y - ball.radius < b.y + brick.height) {
+
+               ball.dy = - ball.dy;
+               b.status = false;
+               SCORE += SCORE_UNIT;
+            }
+         }
+      }
+   }
+}
+
+function ballReset() {
+   ball.x = canvas.width / 2;
+   ball.y = paddle.y - BALL_RADIUS;
+   ball.dx = 3 * (Math.random() * 2 - 1); //random direction when the ball resets
+   ball.dy = -3
+}
+
+//GAME
+let LIFE = 3;
 let SCORE = 0;
-const SCORE_UNIT = 10;
+const SCORE_UNIT = 100;
 let LEVEL = 1;
 const MAX_LEVEL = 3;
 
-function showGameStats(text, textX, textY) {
+function renderStats(text, textX, textY) {
    context.fillStyle = "white";
    context.font = "25px Arial";
    context.fillText(text, textX, textY)
@@ -209,7 +215,7 @@ function levelUp() {
       brick.row++;
       createBricks();
       ball.speed += 1;
-      resetBall();
+      ballReset();
       LEVEL++
    }
 }
@@ -222,27 +228,27 @@ function gameOver() {
    }
 }
 
-const draw = () => {
-   context.clearRect(0, 0, canvas.width, canvas.height);
+function draw() {
    drawPaddle();
    drawBall();
    drawBricks();
-   showGameStats(SCORE, 35, 25);
-   showGameStats(LIFE, canvas.width - 35, 25);
-   showGameStats(LEVEL, canvas.width / 2, 25);
+   renderStats(SCORE, 35, 25);
+   renderStats(LIFE, canvas.width - 35, 25);
+   renderStats(LEVEL, canvas.width / 2, 25);
 }
 
 function update() {
    movePaddle();
    moveBall();
-   ballWallCollision();
    ballPaddleCollision();
+   ballWallCollision();
    ballBrickCollision();
-   gameOver();
    levelUp();
+   gameOver();
 }
 
 function loop() {
+   context.clearRect(0, 0, canvas.width, canvas.height);
    draw();
    update();
 
