@@ -1,3 +1,15 @@
+body {
+   background-image: url("./images/spaceB.jpg");
+   background-repeat: no-repeat;
+   background-position: center;
+   background-attachment: fixed;
+   background-size: cover;
+}
+
 #spacebreakout-ui {
    background: black;
+   display: block;
+   margin: auto;
+   margin-top: 100px;
+   box-shadow: 0px 0px 100px 20px purple;
 }

@@ -2,23 +2,18 @@ const canvas = document.getElementById('spacebreakout-ui');
 const context = canvas.getContext('2d');
 
 const PADDLE_WIDTH = 100;
-const PADDLE_MARGIN_BOTTOM = 25;
+const PADDLE_BOTTOM_MARGIN = 7;
 const PADDLE_HEIGHT = 20;
-const BALL_RADIUS = 8;
-let LIFE = 3;
-let leftKey = false;
-let rightKey = false;
 
 const paddle = {
-   //position(center) of paddle relative to canvas
    x: (canvas.width / 2) - (PADDLE_WIDTH / 2),
-   y: canvas.height - PADDLE_MARGIN_BOTTOM - PADDLE_HEIGHT,
+   y: canvas.height - PADDLE_BOTTOM_MARGIN - PADDLE_HEIGHT,
    width: PADDLE_WIDTH,
    height: PADDLE_HEIGHT,
    dx: 5
 };
 
-function drawPaddle() {
+const drawPaddle = () => {
    context.fillStyle = 'silver';
    context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 
@@ -26,6 +21,9 @@ function drawPaddle() {
    context.lineWidth = 2;
    context.strokeRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
+
+let leftKey = false;
+let rightKey = false;
 
 document.addEventListener('keydown', function(event) {
    if (event.keyCode === 37) {
@@ -44,12 +42,13 @@ document.addEventListener('keyup', function(event) {
 })
 
 function movePaddle() {
-   if (leftKey && paddle.x > 0) {
+   if (leftKey && paddle.x > 7) {
       paddle.x -= paddle.dx;
-   } else if (rightKey && paddle.x + paddle.width < canvas.width) {
+   } else if (rightKey && paddle.x + paddle.width < canvas.width - 7) {
       paddle.x += paddle.dx;
    }
 }
+const BALL_RADIUS = 8;
 
 const ball = {
    x: canvas.width / 2,
@@ -116,10 +115,121 @@ function ballPaddleCollision() {
       }
 }
 
-function draw() {
+const brick = {
+   row: 5,
+   column: 10,
+   width: canvas.width / 10,
+   height: 20,
+   offSetLeft: 0,
+   offSetTop: 25,
+   marginTop: 50,
+   fillColor: "purple",
+   strokeColor: "white"
+}
+
+let bricks = [];
+
+function createBricks() {
+   for (let i = 0; i < brick.row; i++) {
+      bricks[i] = [];
+      for (let j = 0; j < brick.column; j++) {
+         bricks[i][j] = {
+            x: j * (brick.offSetLeft + brick.width) + brick.offSetLeft,
+            y: i * (brick.offSetTop + brick.height) + brick.offSetTop + brick.marginTop,
+            status: true
+         }
+      }
+   }
+}
+
+createBricks();
+
+function ballBrickCollision() {
+   for (let i = 0; i < brick.row; i++) {
+      for (let j = 0; j < brick.column; j++) {
+         let b = bricks[i][j];
+
+         if (b.status) {
+            if (ball.x + ball.radius > b.x &&
+               ball.x - ball.radius < b.x + brick.width &&
+               ball.y + ball.radius > b.y &&
+               ball.y - ball.radius < b.y + brick.height) {
+                  ball.dy = - ball.dy;
+                  b.status = false;
+                  SCORE += SCORE_UNIT;
+               }
+         }
+      }
+   }
+}
+
+function drawBricks() {
+   let color = ["teal", "chartreuse", "magenta", "orange"];
+   for (let i = 0; i < brick.row; i++) {
+      for (let j = 0; j < brick.column; j++) {
+         let b = bricks[i][j];
+
+         if (b.status) {
+            context.fillStyle = color[Math.floor(Math.random() * color.length)];
+            context.fillRect(b.x, b.y, brick.width, brick.height);
+
+            context.strokeStyle = brick.strokeColor;
+            context.strokeRect(b.x, b.y, brick.width, brick.height);
+         }
+      }
+   }
+}
+
+let LIFE = 30;
+let SCORE = 0;
+const SCORE_UNIT = 10;
+let LEVEL = 1;
+const MAX_LEVEL = 3;
+
+function showGameStats(text, textX, textY) {
+   context.fillStyle = "white";
+   context.font = "25px Arial";
+   context.fillText(text, textX, textY)
+}
+
+function levelUp() {
+   let isLevelDone = true;
+
+   for (let i = 0; i < brick.row; i++) {
+      for (let j = 0; j < brick.column; j++) {
+         isLevelDone = isLevelDone && !bricks[i][j].status;
+      }
+   }
+
+   if (isLevelDone) {
+      if (LEVEL >= MAX_LEVEL) {
+         GAME_OVER = true;
+         return;
+      }
+      brick.row++;
+      createBricks();
+      ball.speed += 1;
+      resetBall();
+      LEVEL++
+   }
+}
+
+let GAME_OVER;
+
+function gameOver() {
+   if (LIFE <= 0) {
+      GAME_OVER = true;
+   }
+}
+
+const draw = () => {
    context.clearRect(0, 0, canvas.width, canvas.height);
    drawPaddle();
    drawBall();
+   drawBricks();
+   showGameStats(SCORE, 35, 25);
+   showGameStats(LIFE, canvas.width - 35, 25);
+   showGameStats(LEVEL, canvas.width / 2, 25);
 }
 
 function update() {
@@ -127,15 +237,18 @@ function update() {
    moveBall();
    ballWallCollision();
    ballPaddleCollision();
+   ballBrickCollision();
+   gameOver();
+   levelUp();
 }
 
 function loop() {
-
    draw();
-
    update();
 
-   requestAnimationFrame(loop);
+   if (!GAME_OVER) {
+      requestAnimationFrame(loop);
+   }
 }
 
 loop();
