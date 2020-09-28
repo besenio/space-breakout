@@ -42,7 +42,7 @@ document.addEventListener('keyup', function(event) {
       pause = !pause;
    } else if (event.keyCode === 13) { //enter
       start = true;
-   } else if (pause && event.keyCode === 89) { //y
+   } else if ((pause && event.keyCode === 89) || (GAME_OVER && event.keyCode === 89)) { //y
       restart = true;
    }
 })
@@ -86,8 +86,8 @@ function moveBall() {
 
 //BRICKS
 const brick = {
-   row: 1,
-   column: 1,
+   row: 3,
+   column: 10,
    width: canvas.width / 10,
    height: 20,
    offSetLeft: 0,
@@ -300,7 +300,7 @@ function loop() {
 
    if (!GAME_OVER) {
       requestAnimationFrame(loop);
-   }
+   } 
 }
 
 loop();
