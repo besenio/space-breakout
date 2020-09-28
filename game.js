@@ -38,10 +38,12 @@ document.addEventListener('keyup', function(event) {
       leftKey = false;
    } else if (event.keyCode === 39) {
       rightKey = false;
-   } else if (event.keyCode === 32) {
+   } else if (event.keyCode === 32) { //spacebar
       pause = !pause;
-   } else if (event.keyCode === 13) {
+   } else if (event.keyCode === 13) { //enter
       start = true;
+   } else if (pause && event.keyCode === 89) { //y
+      restart = true;
    }
 })
 
@@ -55,15 +57,15 @@ function movePaddle() {
 
 //BALL
 const BALL_RADIUS = 8;
-let ball_speed = 0
+let ballSpeed = 0
 
 const ball = {
    x: canvas.width / 2,
    y: paddle.y - BALL_RADIUS,
    radius: BALL_RADIUS,
    speed: 5,
-   dx: (3 + ball_speed) * (Math.random() * 2 - 1), //random direction when the ball starts
-   dy: -3 - ball_speed
+   dx: (3 + ballSpeed) * (Math.random() * 2 - 1), //random direction when the ball starts
+   dy: -3 - ballSpeed
 }
 
 function drawBall() {
@@ -84,8 +86,8 @@ function moveBall() {
 
 //BRICKS
 const brick = {
-   row: 3,
-   column: 10,
+   row: 1,
+   column: 1,
    width: canvas.width / 10,
    height: 20,
    offSetLeft: 0,
@@ -186,8 +188,8 @@ function brickCollision() {
 function ballReset() {
    ball.x = canvas.width / 2;
    ball.y = paddle.y - BALL_RADIUS;
-   ball.dx = (3 + ball_speed) * (Math.random() * 2 - 1); //random direction when the ball resets
-   ball.dy = -3 - ball_speed;
+   ball.dx = (3 + ballSpeed) * (Math.random() * 2 - 1); //random direction when the ball resets
+   ball.dy = -3 - ballSpeed;
 }
 
 //GAME
@@ -216,12 +218,14 @@ function levelUp() {
    if (levelComplete) {
       if (LEVEL >= MAX_LEVEL) {
          GAME_OVER = true;
+         context.fillText('YOU WIN!', canvas.width / 2 - 80, canvas.height / 2);
+         newGame();
          return;
       }
       brick.row = brick.row + 1;
       createBricks();
       ball.speed = ball.speed + 2;
-      ball_speed = ball_speed + 2;
+      ballSpeed = ballSpeed + 2;
       ballReset();
       LEVEL = LEVEL + 1
    }
@@ -233,6 +237,7 @@ function gameOver() {
    if (LIVES <= 0) {
       GAME_OVER = true;
       context.fillText('GAME OVER', canvas.width / 2 - 100, canvas.height / 2);
+      newGame();
    }
 }
 
@@ -254,7 +259,14 @@ function startGame() {
 let pause = false;
 
 function pauseGame() {
-   context.fillText('GAME PAUSED', canvas.width / 2 - 125, canvas.height / 2);
+   context.fillText('GAME PAUSED', canvas.width / 2 - 121, canvas.height / 2);
+   newGame();
+}
+
+let restart = false;
+
+function newGame() {
+   context.fillText('NEW GAME (Y)', canvas.width / 2 - 118, canvas.height / 2 + 35);
 }
 
 function update() {
@@ -281,6 +293,10 @@ function loop() {
    context.clearRect(0, 0, canvas.width, canvas.height);
    draw();
    update();
+
+   if (pause && restart) {
+      location.reload();
+   }
 
    if (!GAME_OVER) {
       requestAnimationFrame(loop);
