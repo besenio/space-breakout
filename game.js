@@ -24,19 +24,12 @@ function drawPaddle() {
 
 let leftKey = false;
 let rightKey = false;
-let pauseKey = false;
 
 document.addEventListener('keydown', function(event) {
    if (event.keyCode === 37) {
       leftKey = true;
    } else if (event.keyCode === 39) {
       rightKey = true;
-   } else if (event.keyCode === 80) {
-      if (pauseKey === false) {
-         pauseKey = true;
-      } else {
-         pauseKey = false;
-      }
    }
 })
 
@@ -45,6 +38,10 @@ document.addEventListener('keyup', function(event) {
       leftKey = false;
    } else if (event.keyCode === 39) {
       rightKey = false;
+   } else if (event.keyCode === 32) {
+      pause = !pause;
+   } else if (event.keyCode === 13) {
+      start = true;
    }
 })
 
@@ -58,14 +55,15 @@ function movePaddle() {
 
 //BALL
 const BALL_RADIUS = 8;
+let ball_speed = 0
 
 const ball = {
    x: canvas.width / 2,
    y: paddle.y - BALL_RADIUS,
    radius: BALL_RADIUS,
    speed: 5,
-   dx: 3 * (Math.random() * 2 - 1), //random direction when the ball starts
-   dy: -3
+   dx: (3 + ball_speed) * (Math.random() * 2 - 1), //random direction when the ball starts
+   dy: -3 - ball_speed
 }
 
 function drawBall() {
@@ -80,8 +78,8 @@ function drawBall() {
 }
 
 function moveBall() {
-   ball.x += ball.dx;
-   ball.y += ball.dy;
+   ball.x += 1.25 * ball.dx;
+   ball.y += 1.25 * ball.dy;
 }
 
 //BRICKS
@@ -132,30 +130,30 @@ function drawBricks() {
 }
 
 //COLLISION DETECTION
-function ballPaddleCollision() {
+function paddleCollision() {
    if (ball.x < paddle.x + paddle.width &&
       ball.x > paddle.x &&
       paddle.y < paddle.y + paddle.height &&
       ball.y > paddle.y) {
 
-      let collidePoint = ball.x - (paddle.x + paddle.width / 2);
-      collidePoint = collidePoint / (paddle.width / 2);
-      let angle = collidePoint * Math.PI / 3; //angle the ball
+      let collision = ball.x - (paddle.x + paddle.width / 2);
+      collision = collision / (paddle.width / 2);
+      let angle = collision * Math.PI / 3; //angle the ball
 
       ball.dx = ball.speed * Math.sin(angle);
       ball.dy = - ball.speed * Math.cos(angle);
    }
 }
 
-function ballWallCollision() {
+function wallCollision() {
    //when the ball hits the left or right border
    if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
-      ball.dx = -ball.dx;
+      ball.dx = - ball.dx;
    }
 
    //when the ball hits the top border
    if (ball.y - ball.radius < 0) {
-      ball.dy = -ball.dy;
+      ball.dy = - ball.dy;
    }
 
    //when the ball hits the bottom border
@@ -165,7 +163,7 @@ function ballWallCollision() {
    }
 }
 
-function ballBrickCollision() {
+function brickCollision() {
    for (let i = 0; i < brick.row; i++) {
       for (let j = 0; j < brick.column; j++) {
          let b = bricks[i][j];
@@ -188,12 +186,12 @@ function ballBrickCollision() {
 function ballReset() {
    ball.x = canvas.width / 2;
    ball.y = paddle.y - BALL_RADIUS;
-   ball.dx = 3 * (Math.random() * 2 - 1); //random direction when the ball resets
-   ball.dy = -3
+   ball.dx = (3 + ball_speed) * (Math.random() * 2 - 1); //random direction when the ball resets
+   ball.dy = -3 - ball_speed;
 }
 
 //GAME
-let LIVES = 5;
+let LIVES = 3;
 let SCORE = 0;
 const POINTS = 100;
 let LEVEL = 1;
@@ -222,7 +220,8 @@ function levelUp() {
       }
       brick.row = brick.row + 1;
       createBricks();
-      ball.speed = ball.speed + 1;
+      ball.speed = ball.speed + 2;
+      ball_speed = ball_speed + 2;
       ballReset();
       LEVEL = LEVEL + 1
    }
@@ -233,6 +232,7 @@ let GAME_OVER;
 function gameOver() {
    if (LIVES <= 0) {
       GAME_OVER = true;
+      context.fillText('GAME OVER', canvas.width / 2 - 100, canvas.height / 2);
    }
 }
 
@@ -245,16 +245,34 @@ function draw() {
    renderStats(LIVES, canvas.width - 35, 35, lives_svg, canvas.width - 70, 5);
 }
 
+let start = "start";
+
+function startGame() {
+   context.fillText('START GAME', canvas.width / 2 - 110, canvas.height / 2);
+}
+
+let pause = false;
+
+function pauseGame() {
+   context.fillText('GAME PAUSED', canvas.width / 2 - 125, canvas.height / 2);
+}
+
 function update() {
-   if (pauseKey) {
+   if (start === "start") {
+      startGame();
+      return;
+   }
+
+   if (pause) {
+      pauseGame();
       return;
    }
 
    movePaddle();
    moveBall();
-   ballPaddleCollision();
-   ballWallCollision();
-   ballBrickCollision();
+   paddleCollision();
+   wallCollision();
+   brickCollision();
    levelUp();
    gameOver();
 }
