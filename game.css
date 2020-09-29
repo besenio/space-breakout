@@ -44,7 +44,7 @@ body {
    transform-style: preserve-3d;
 }
 
-.information:hover .instructions {
+.instructions:hover {
    transform: rotateY(.5turn);
 }
 
@@ -73,15 +73,12 @@ body {
 .instructions-front,
 .instructions-back {
    position: absolute;
-   margin-top: 30px;
+   margin-top: 40px;
    top: 0;
    bottom: 0;
    left: 0;
    right: 0;
-}
-
-.instructions-front {
-   /* transform: rotateY(.5turn); */
+   transform-style: preserve-3d;
 }
 
 .instructions-back {
@@ -89,26 +86,19 @@ body {
 }
 
 .instructions-title {
-   transform: translateZ(200px);
+   transform: translateZ(10rem);
 }
 
 .instructions-directions {
    font-size: 16px;
-   transform: translateZ(200px);
+   transform: translateZ(10rem);
+}
+
+.instructions-highscores {
+   transform: translateZ(10rem);
 }
 
 .fab {
    font-size: 25px;
    margin: 5px 2px;
 }
-
-/* button {
-   height: 30px;
-   width: 100px;
-   cursor: pointer;
-   margin-top: 5px;
-   background-color: violet;
-   color: white;
-   font-family: "Righteous";
-   font-size: 16px;
-} */
