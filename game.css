@@ -73,7 +73,7 @@ body {
 .instructions-front,
 .instructions-back {
    position: absolute;
-   margin-top: 40px;
+   margin-top: 30px;
    top: 0;
    bottom: 0;
    left: 0;
@@ -98,7 +98,13 @@ body {
    transform: translateZ(10rem);
 }
 
+.instructions-footer {
+   margin-top: 20px;
+   font-size: 14px;
+}
+
 .fab {
    font-size: 25px;
    margin: 5px 2px;
+   cursor: pointer;
 }

@@ -15,7 +15,7 @@ const paddle = {
 };
 
 function drawPaddle() {
-   context.fillStyle = 'grey';
+   context.fillStyle = 'violet';
    context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
    context.lineWidth = 1;
    context.strokeStyle = 'white';
@@ -57,7 +57,7 @@ function movePaddle() {
 
 //BALL
 const BALL_RADIUS = 8;
-let ballSpeed = 0
+let ballSpeed = 1;
 
 const ball = {
    x: canvas.width / 2,
@@ -71,7 +71,7 @@ const ball = {
 function drawBall() {
    context.beginPath();
    context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2); //draw circle
-   context.fillStyle = "grey";
+   context.fillStyle = "white";
    context.fill();
    context.lineWidth = 1;
    context.strokeStyle = "white";
@@ -199,6 +199,19 @@ const POINTS = 100;
 let LEVEL = 1;
 const MAX_LEVEL = 3;
 
+localStorage.setItem('mostRecentScore', 1000);
+const finalScore = document.getElementById('final-score');
+const mostRecentScore = localStorage.getItem('mostRecentScore');
+const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
+
+finalScore.innerText = mostRecentScore;
+
+const scores = {
+   scores: mostRecentScore
+}
+
+highScores.push(scores)
+
 function renderStats(stat, statXPos, statYPos, image, imageXPos, imageYPos) {
    context.fillStyle = 'violet';
    context.font = '35px Righteous';
@@ -224,7 +237,7 @@ function levelUp() {
       }
       brick.row = brick.row + 1;
       createBricks();
-      ball.speed = ball.speed + 2;
+      ball.speed = ball.speed + 3;
       ballSpeed = ballSpeed + 2;
       ballReset();
       LEVEL = LEVEL + 1
