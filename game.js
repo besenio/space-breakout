@@ -195,22 +195,22 @@ function ballReset() {
 //GAME
 let LIVES = 3;
 let SCORE = 0;
-const POINTS = 100;
+let POINTS = 100;
 let LEVEL = 1;
 const MAX_LEVEL = 3;
 
-localStorage.setItem('mostRecentScore', 1000);
-const finalScore = document.getElementById('final-score');
-const mostRecentScore = localStorage.getItem('mostRecentScore');
-const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
+// localStorage.setItem('mostRecentScore', SCORE);
+// const finalScore = document.getElementById('final-score');
+// const mostRecentScore = localStorage.getItem('mostRecentScore');
+// const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
 
-finalScore.innerText = mostRecentScore;
+// finalScore.innerText = mostRecentScore;
 
-const scores = {
-   scores: mostRecentScore
-}
+// const scores = {
+//    scores: mostRecentScore
+// }
 
-highScores.push(scores)
+// highScores.push(scores)
 
 function renderStats(stat, statXPos, statYPos, image, imageXPos, imageYPos) {
    context.fillStyle = 'violet';
@@ -240,7 +240,8 @@ function levelUp() {
       ball.speed = ball.speed + 3;
       ballSpeed = ballSpeed + 2;
       ballReset();
-      LEVEL = LEVEL + 1
+      LEVEL = LEVEL + 1;
+      POINTS = POINTS + 200
    }
 }
 
