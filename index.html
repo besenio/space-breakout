@@ -4,6 +4,8 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+      integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous">
    <link rel="stylesheet" href="game.css">
    <title>Space Breakout</title>
 </head>
@@ -12,13 +14,31 @@
    <canvas id="spacebreakout-ui" width="700" height="600"></canvas>
    <div class=information>
       <div class="instructions">
-         <div class="instructions-header">INSTRUCTIONS</div>
-         <button>FLIP</button>
+         <div class="instructions-front">
+            <div class="instructions-title">CONTROLS</div>
+            <div class="instructions-directions">
+               <div>ENTER KEY: Start Game</div>
+               <div>SPACEBAR: Pause Game</div>
+               <div>Y KEY: New Game</div>
+               <div>LEFT ARROW KEY: Move Paddle Left</div>
+               <div>RIGHT ARROW KEY: Move Paddle Right</div>
+            </div>
+         </div>
+         <div class="instructions-back">
+            <div>BACK</div>
+         </div>
       </div>
       <div class="personal-info">
-         <div class="name">KEVIN BESENIO</div>
-         <div class="title">SOFTWARE ENGINEER</div>
-         <button>FLIP</button>
+         <div class="personal-info-front">
+            <div class="name">KEVIN BESENIO</div>
+            <div class="title">SOFTWARE ENGINEER</div>
+            <i class="fab fa-linkedin"></i>
+            <i class="fab fa-github"></i>
+            <i class="fab fa-angellist"></i>
+         </div>
+         <div class="personal-info-back">
+            <div>BACK</div>
+         </div>
       </div>
    </div>
    <script src="images.js"></script>
