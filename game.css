@@ -40,6 +40,12 @@ body {
    position: absolute;
    top: 200px;
    left: 340px;
+   transition: transform 3s;
+   transform-style: preserve-3d;
+}
+
+.information:hover .instructions {
+   transform: rotateY(.5turn);
 }
 
 .personal-info {
@@ -74,8 +80,21 @@ body {
    right: 0;
 }
 
+.instructions-front {
+   /* transform: rotateY(.5turn); */
+}
+
+.instructions-back {
+   transform: rotateY(.5turn);
+}
+
+.instructions-title {
+   transform: translateZ(200px);
+}
+
 .instructions-directions {
    font-size: 16px;
+   transform: translateZ(200px);
 }
 
 .fab {
