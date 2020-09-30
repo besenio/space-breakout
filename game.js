@@ -212,6 +212,13 @@ const MAX_LEVEL = 3;
 
 // highScores.push(scores)
 
+function handleScores() {
+   localStorage.setItem('mostRecentScore', SCORE);
+   const finalScore = document.getElementById('final-score');
+   const mostRecentScore = localStorage.getItem('mostRecentScore');
+   finalScore.innerText = mostRecentScore;
+}
+
 function renderStats(stat, statXPos, statYPos, image, imageXPos, imageYPos) {
    context.fillStyle = 'violet';
    context.font = '35px Righteous';
@@ -233,6 +240,7 @@ function levelUp() {
          GAME_OVER = true;
          context.fillText('YOU WIN!', canvas.width / 2 - 80, canvas.height / 2);
          newGame();
+         handleScores();
          return;
       }
       brick.row = brick.row + 1;
@@ -252,6 +260,7 @@ function gameOver() {
       GAME_OVER = true;
       context.fillText('GAME OVER', canvas.width / 2 - 100, canvas.height / 2);
       newGame();
+      handleScores();
    }
 }
 
