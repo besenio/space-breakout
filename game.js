@@ -1,7 +1,7 @@
 const canvas = document.getElementById('spacebreakout-ui');
 const context = canvas.getContext('2d');
 
-//PADDLES
+//PADDLE
 const PADDLE_WIDTH = 100;
 const PADDLE_HEIGHT = 20;
 const PADDLE_BOTTOM_MARGIN = 5; //dont touch bottom border
