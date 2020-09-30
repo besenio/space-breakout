@@ -193,7 +193,7 @@ function ballReset() {
 }
 
 //GAME
-let LIVES = 1;
+let LIVES = 3;
 let SCORE = 0;
 let POINTS = 100;
 let LEVEL = 1;
