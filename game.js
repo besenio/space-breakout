@@ -193,35 +193,34 @@ function ballReset() {
 }
 
 //GAME
-let LIVES = 3;
+let LIVES = 1;
 let SCORE = 0;
 let POINTS = 100;
 let LEVEL = 1;
 const MAX_LEVEL = 3;
 
-// localStorage.setItem('mostRecentScore', SCORE);
-// const finalScore = document.getElementById('final-score');
-// const mostRecentScore = localStorage.getItem('mostRecentScore');
-// const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
-
-// finalScore.innerText = mostRecentScore;
-
-// const scores = {
-//    scores: mostRecentScore
-// }
-
-// highScores.push(scores)
-
+//HIGHSCORES
 const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
 
-function handleScores() {
+function saveScores() {
    localStorage.setItem('mostRecentScore', SCORE);
-   const finalScore = document.getElementById('final-score');
-   const mostRecentScore = localStorage.getItem('mostRecentScore');
-   finalScore.innerText = mostRecentScore;
+   const mostRecentScore = JSON.parse(localStorage.getItem('mostRecentScore'));
 
-   highScores.push(mostRecentScore)
+   highScores.push(mostRecentScore);
+   localStorage.setItem('highScores', JSON.stringify(highScores.sort((a, b) => b - a).splice(0, 5)));
 }
+
+function renderScores() {
+   const topFiveList = document.getElementById('top-five-scores');
+   const topFive = JSON.parse(localStorage.getItem('highScores')) || [];
+
+   topFiveList.innerHTML =
+      topFive.map((score, idx) => {
+         return `<div class="top-five">${idx + 1}. ${score}</div>`
+      }).join(""); //drops the comma
+}
+
+renderScores();
 
 function renderStats(stat, statXPos, statYPos, image, imageXPos, imageYPos) {
    context.fillStyle = 'violet';
@@ -244,7 +243,8 @@ function levelUp() {
          GAME_OVER = true;
          context.fillText('YOU WIN!', canvas.width / 2 - 80, canvas.height / 2);
          newGame();
-         handleScores();
+         saveScores();
+         renderScores();
          return;
       }
       brick.row = brick.row + 1;
@@ -264,7 +264,8 @@ function gameOver() {
       GAME_OVER = true;
       context.fillText('GAME OVER', canvas.width / 2 - 100, canvas.height / 2);
       newGame();
-      handleScores();
+      saveScores();
+      renderScores();
    }
 }
 
