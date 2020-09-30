@@ -140,7 +140,7 @@ function paddleCollision() {
 
       let collision = ball.x - (paddle.x + paddle.width / 2);
       collision = collision / (paddle.width / 2);
-      let angle = collision * Math.PI / 3; //angle the ball
+      let angle = collision * Math.PI / 3;
 
       ball.dx = ball.speed * Math.sin(angle);
       ball.dy = - ball.speed * Math.cos(angle);
@@ -217,7 +217,7 @@ function renderScores() {
    topFiveList.innerHTML =
       topFive.map((score, idx) => {
          return `<div class="top-five">${idx + 1}. ${score}</div>`
-      }).join(""); //drops the comma
+      }).join("");
 }
 
 renderScores();
