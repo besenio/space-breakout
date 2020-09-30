@@ -123,6 +123,12 @@ body {
 .personal-info-back-icons a .fab {
    font-size: 50px;
    margin: 40px 15px;
+   color: violet;
+}
+
+.personal-info-back-icons a .fab:hover {
+   font-size: 55px;
+   color: rgb(204, 73, 204);
 }
 
 .top-five {
