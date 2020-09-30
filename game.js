@@ -212,11 +212,15 @@ const MAX_LEVEL = 3;
 
 // highScores.push(scores)
 
+const highScores = JSON.parse(localStorage.getItem("highScores")) || [];
+
 function handleScores() {
    localStorage.setItem('mostRecentScore', SCORE);
    const finalScore = document.getElementById('final-score');
    const mostRecentScore = localStorage.getItem('mostRecentScore');
    finalScore.innerText = mostRecentScore;
+
+   highScores.push(mostRecentScore)
 }
 
 function renderStats(stat, statXPos, statYPos, image, imageXPos, imageYPos) {
