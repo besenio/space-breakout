@@ -193,7 +193,7 @@ function ballReset() {
 }
 
 //GAME
-let LIVES = 3;
+let LIVES = 1;
 let SCORE = 0;
 let POINTS = 100;
 let LEVEL = 1;
@@ -328,7 +328,7 @@ function loop() {
 
    if (!GAME_OVER) {
       requestAnimationFrame(loop);
-   } 
+   }
 }
 
 loop();
