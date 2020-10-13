@@ -263,7 +263,7 @@ function gameOver() {
    if (LIVES <= 0) {
       GAME_OVER = true;
       context.fillText('GAME OVER', canvas.width / 2 - 100, canvas.height / 2);
-      newGame();
+      context.fillText('NEW GAME IN 5 SECS...', canvas.width / 2 - 190, canvas.height / 2 + 40);
       saveScores();
       renderScores();
    }
@@ -328,6 +328,10 @@ function loop() {
 
    if (!GAME_OVER) {
       requestAnimationFrame(loop);
+   } else {
+      setTimeout(function() {
+         location.reload();
+      }, 5000);
    }
 }
 
