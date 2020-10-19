@@ -15,7 +15,7 @@
 <div id="introduction"></div>
 
 # Introduction
-[Space Breakout](https://besenio.github.io/SpaceBreakout/) is a spin-off of the classic Atari arcade game "Breakout". In it's current state, the player will begin the game with three lives and will have to break each brick on the screen to pass the level. There's only three levels but beware, the ball speed may get out of control. 
+[Space Breakout](https://besenio.github.io/SpaceBreakout/) is a spin-off of the classic Atari arcade game "Breakout". In its current state, the player will begin the game with three lives and will have to break each brick on the screen to pass the level. There's only three levels but beware, the ball speed may get out of control. 
 
 <div id="technologies"></div>
 
